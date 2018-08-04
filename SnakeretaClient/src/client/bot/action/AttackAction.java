@@ -52,7 +52,7 @@ public class AttackAction implements Action {
 	}
 
 	public boolean handle() throws IOException {
-		Character target = getBot().getAttackTarget(1);
+		Character target = getBot().getCurrentTarget();
 		if(target != null) {
 			attack(target);
 		}
@@ -69,5 +69,6 @@ public class AttackAction implements Action {
 			getWorld().getCommunication().face(facing);
 		}
 		getWorld().getCommunication().attack();
+		getBot().setCurrentTargetAttacked(true);
 	}
 }

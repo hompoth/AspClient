@@ -15,5 +15,8 @@ public interface Bot {
 
 	public Stack<Point> getPath();
 
-	public void afterMissCharacter(int loginId);
+	public void afterCharacterMiss(int loginId);
+	
+	public void afterCharacterLeave(int loginId);
+
 }

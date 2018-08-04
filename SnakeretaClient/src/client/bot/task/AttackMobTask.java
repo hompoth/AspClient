@@ -40,12 +40,12 @@ public class AttackMobTask implements Task {
 		__Self = self;
 	}
 	
-	private int __LastTargetId;
-	private int getLastTargetId() {
-		return __LastTargetId;
+	private int __LastTargetAttackedId;
+	private int getLastTargetAttackedId() {
+		return __LastTargetAttackedId;
 	}
-	private void setLastTargetId(int loginId) {
-		__LastTargetId = loginId;
+	private void setLastTargetAttackedId(int loginId) {
+		__LastTargetAttackedId = loginId;
 	}
 	
 	private int __LastTargetInitialHp;
@@ -72,36 +72,48 @@ public class AttackMobTask implements Task {
 	}
 
 	public boolean handle() {
+		Character currentTarget = getBot().getCurrentTarget();
 		if(getBot().getTaskState() != TaskState.AttackMob) {
+			Log.println("-------" + getBot().getTaskState());
 			getBot().setTaskState(TaskState.Idle);
+			Log.println("-------" + getBot().getTaskState());
+			getBot().setCurrentTarget(null);
+			Log.println("-------" + getBot().getTaskState());
 			return true;
 		}
 		getBot().clearAttackPoints();
 		Character target = getBot().getAttackTarget(5);		
 		if(target == null) {
 			getBot().setTaskState(TaskState.Idle);
+			getBot().setCurrentTarget(null);
+			Log.println("15123----------------");
 			return true;
 		}
-		if(getLastTargetId() == target.loginId) {
-			long currentTime = getTimeFirstAttackedLastTarget() + 5000000000L;
-			if(currentTime < System.nanoTime()) { // 5 seconds past
-				if(getLastTargetInitialHp() < target.hp + 10) {
+		if(getLastTargetAttackedId() == target.loginId) {
+			long currentTime = getTimeFirstAttackedLastTarget();
+			if(currentTime + 3_000_000_000L < System.nanoTime()) { // 3 seconds past
+				if(getLastTargetInitialHp() - 5 < target.hp) {
 					getBot().ignoreLoginId(target.loginId);
 					getBot().setTaskState(TaskState.Idle);
+					getBot().setCurrentTarget(null);
+					Log.println("123213----------------");
 					return true;
 				}
 			}
 		}
-		else {
-			setLastTargetId(target.loginId);
-			setLastTargetInitialHp(target.hp);
+		else if(getBot().getCurrentTargetAttacked() && currentTarget != null) { 
+			setLastTargetAttackedId(currentTarget.loginId);
+			setLastTargetInitialHp(currentTarget.hp);
 			setTimeFirstAttackedLastTarget(System.nanoTime());
 			Log.println("1----------------------------"+getTimeFirstAttackedLastTarget());
 		}
+		
 		getBot().addAttackPoints(target, AttackType.Melee,1);
 		Point attackPosition = getBot().getClosestAttackPoint();
-		getBot().setCurrentTarget(attackPosition);
+		getBot().setCurrentPoint(attackPosition);
+		getBot().setCurrentTarget(target);
 		setInstant(System.nanoTime());
+		Log.println("1234----------------");
 		return false;
 	}
 }

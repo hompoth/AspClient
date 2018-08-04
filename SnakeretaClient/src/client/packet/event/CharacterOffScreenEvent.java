@@ -11,6 +11,7 @@ public class CharacterOffScreenEvent extends Packet {
     	String message = this.getMessage().substring(3);
 		int loginId;
 		loginId = Integer.parseInt(message);
+		world.getBot().afterCharacterLeave(loginId);
 		world.getCharacters().remove(loginId);
 		if(loginId==world.getSelfId()) {
 			throw new Error();

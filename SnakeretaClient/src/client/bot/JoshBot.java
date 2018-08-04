@@ -32,12 +32,32 @@ import client.Tile;
 public class JoshBot implements Bot {
 
 	public boolean enabled = false;
-	private Point __CurrentTarget;
-	public Point getCurrentTarget() {
+	private Character __CurrentTarget;
+	public Character getCurrentTarget() {
 		return __CurrentTarget;
 	}
-	public void setCurrentTarget(Point point) {
-		__CurrentTarget = point;
+	public void setCurrentTarget(Character character) {
+		if(((character == null || getCurrentTarget() == null) && character != getCurrentTarget()) ||
+		 (character != null && getCurrentTarget() != null && character.loginId != getCurrentTarget().loginId )) {
+			setCurrentTargetAttacked(false);
+		}
+		__CurrentTarget = character;
+	}
+	
+	private boolean __CurrentTargetAttacked;
+	public boolean getCurrentTargetAttacked() {
+		return __CurrentTargetAttacked;
+	}
+	public void setCurrentTargetAttacked(boolean wasAttacked) {
+		__CurrentTargetAttacked = wasAttacked;
+	}
+	
+	private Point __CurrentPoint;
+	public Point getCurrentPoint() {
+		return __CurrentPoint;
+	}
+	public void setCurrentPoint(Point point) {
+		__CurrentPoint = point;
 	}
 	
 	private World __World;
@@ -101,6 +121,7 @@ public class JoshBot implements Bot {
 			Task task = getTaskQueue().peek();
 			if(task.getInstant() < System.nanoTime()) {
 				boolean taskDone = task.handle();
+				Log.println(task.getClass());
 				getTaskQueue().remove(task);
 				if(!taskDone) { // Re-add task and re-compute instant priority
 					addTask(task);
@@ -297,7 +318,14 @@ public class JoshBot implements Bot {
 	public void afterMapChange() throws IOException {
 	}
 
-	public void afterMissCharacter(int loginId) {
+	public void afterCharacterMiss(int loginId) {
 		ignoreLoginId(loginId);
+	}
+	
+	public void afterCharacterLeave(int loginId) {
+		Character currentTarget = getCurrentTarget();
+		if(currentTarget != null && currentTarget.loginId == loginId) {
+			setCurrentTarget(null);
+		}
 	}
 }

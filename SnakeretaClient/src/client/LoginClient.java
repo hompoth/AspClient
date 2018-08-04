@@ -110,8 +110,8 @@ public class LoginClient extends Application{
 
         // TODO: Create an options window to choose the size of the game (or fullscreen)
         // Center the canvas and make sure the canvas keeps the 640/480 ratio
-        double width = 1600;
-        double height = 1200;
+        double width = 1680;
+        double height = 1050;
         Group root = new Group();
         Canvas canvas = new Canvas(width, height);
         root.getChildren().add(canvas);
