@@ -54,17 +54,20 @@ public class GoToWaypointTask implements Task {
 
 	public boolean handle() {		
 		if(getBot().getTaskState() != TaskState.GoToWaypoint) {
+			Log.println("GTW1-------" + getBot().getTaskState());
 			getBot().setTaskState(TaskState.Idle);
 			return true;
 		}
 		Character self = getWorld().getSelf();
 		if(targetMap == getWorld().getMapId() && targetX == self.x && targetY == self.y) {
+			Log.println("GTWT-------" + getBot().getTaskState());
 			getBot().setTaskState(TaskState.Idle);
 			return true;
 		}
-		Point currentTarget = getWaypoint(targetMap, targetX, targetY);
-		getBot().setCurrentTarget(currentTarget);
+		Point currentPoint = getWaypoint(targetMap, targetX, targetY);
+		getBot().setCurrentPoint(currentPoint);
 		setInstant(System.nanoTime());
+		Log.println("GTWF-------" + getBot().getTaskState());
 		return false;
 	}
 	private Point getWaypoint(int targetMap, int targetX, int targetY) {

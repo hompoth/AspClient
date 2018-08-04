@@ -19,7 +19,7 @@ public class DisplayEvent  extends Packet {
     	//Character c = world.getCharacter(loginId);
     	//c.name = name;
     	if(displayType == DisplayType.Miss) {
-    		world.getBot().afterMissCharacter(loginId);
+    		world.getBot().afterCharacterMiss(loginId);
     	}
     	//else if(displayType == DisplayType.Attack) {
     		

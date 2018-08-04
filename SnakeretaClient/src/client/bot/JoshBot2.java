@@ -309,7 +309,13 @@ public class JoshBot2 implements Bot {
 	}
 
 	@Override
-	public void afterMissCharacter(int loginId) {
+	public void afterCharacterMiss(int loginId) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void afterCharacterLeave(int loginId) {
 		// TODO Auto-generated method stub
 		
 	}

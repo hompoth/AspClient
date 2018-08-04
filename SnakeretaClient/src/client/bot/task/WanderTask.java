@@ -27,7 +27,7 @@ public class WanderTask implements Task {
 		__OptimalPath = path;
 	}
 	
-	private Point getCurrentTarget() {
+	private Point getCurrentWaypoint() {
 		return getOptimalPath().get(getPathIndex());
 	}
 	private void incrementPathIndex() {
@@ -97,6 +97,10 @@ public class WanderTask implements Task {
 	
 	public boolean handle() {
 		Character self = getWorld().getSelf();
+		if(getBot().getTaskState() == TaskState.AttackMob) {
+			setInstant(System.nanoTime());
+			return false;
+		}
 		if(getBot().getTaskState() != TaskState.Wander) {
 			getBot().setTaskState(TaskState.Idle);
 			return true;
@@ -105,10 +109,10 @@ public class WanderTask implements Task {
 			getBot().setTaskState(TaskState.Idle);
 			return true;
 		}
-		if(getCurrentTarget().x == self.x && getCurrentTarget().y == self.y) {
+		if(getCurrentWaypoint().x == self.x && getCurrentWaypoint().y == self.y) {
 			incrementPathIndex();
 		}
-		getBot().setCurrentTarget(getCurrentTarget());
+		getBot().setCurrentPoint (getCurrentWaypoint());
 		setInstant(System.nanoTime());
 		return false;
 	}

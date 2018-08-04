@@ -48,10 +48,10 @@ public class HealAction implements Action {
 	}
 
 	public boolean handle() throws IOException {
-		if(getSelf().hp < 75) {
-			getWorld().getCommunication().cast(30, getSelf().loginId);
+		if(getSelf().hp < 90) {
+			getWorld().getCommunication().cast(1, getSelf().loginId);
 		}
-		setInstant(System.nanoTime() + 100_000_000);
+		setInstant(System.nanoTime() + 100_000_000L);
 		return false;
 	}
 
