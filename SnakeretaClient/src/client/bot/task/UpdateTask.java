@@ -49,13 +49,17 @@ public class UpdateTask implements Task {
 		TaskState state = getBot().getTaskState();
 		Character self = getWorld().getSelf();
 		Log.println("Task State: "+state);
-		if(getBot().getAttackTarget(5) != null && state != TaskState.AttackMob
-                && !((state == TaskState.GoToWaypoint || state == TaskState.Idle) && !self.isSurrounded(getWorld()))) {
+		if(getBot().getAttackTarget(5) != null && state != TaskState.AttackMob) {
+  //              && !((state == TaskState.GoToWaypoint || state == TaskState.Idle) && !self.isSurrounded(getWorld()))) {
 			getBot().setTaskState(TaskState.AttackMob);
 			getBot().addTask(new AttackMobTask(getBot()));
 		}
 		else if(state == TaskState.Idle) {
-			if(getWorld().getLevel() <= 25 && !(getWorld().getMapId() == 2)) {
+			if(getBot().getClosestItem(2) != null) {
+				getBot().setTaskState(TaskState.PickUp);
+				getBot().addTask(new PickUpTask(getBot()));
+			}
+			else if(getWorld().getLevel() <= 25 && !(getWorld().getMapId() == 2)) {
 				getBot().setTaskState(TaskState.GoToWaypoint);
 				getBot().addTask(new GoToWaypointTask(getBot(), 2, 11, 14));
 			}

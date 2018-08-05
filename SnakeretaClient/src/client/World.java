@@ -4,10 +4,13 @@ import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.net.Socket;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 import javax.imageio.ImageIO;
 
@@ -36,12 +39,20 @@ public class World {
 	private int X_TILES = 13;
 	private int Y_TILES = 9;
 	
-	private HashMap<Integer,Character> __Characters;
-	public void setCharacters(HashMap<Integer,Character> characters) {
-		__Characters = characters;		
+	private HashMap<Integer,Point> __Items;
+	public HashMap<Integer,Point> getItems() {
+		return __Items;
 	}
+	public void setItems(HashMap<Integer,Point> items) {
+		__Items = items;
+	}
+	
+	private HashMap<Integer,Character> __Characters;
 	public HashMap<Integer,Character> getCharacters() {
 		return __Characters;		
+	}
+	public void setCharacters(HashMap<Integer,Character> characters) {
+		__Characters = characters;		
 	}
 	public Character getCharacter(int loginId) {
 		return getCharacters().get(loginId);
@@ -71,20 +82,20 @@ public class World {
 	public int getSelfId() {
 		return __SelfId;		
 	}
-	public void setSelfId(int loginId) {
-		__SelfId = loginId;	
-	}
 	public Character getSelf() {
 		return getCharacter(getSelfId());
 	}
+	public void setSelfId(int loginId) {
+		__SelfId = loginId;	
+	}
 	
 	private GameState __GameState;
+	public GameState getGameState() {
+		return __GameState;		
+	}
 	public void setGameState(GameState gameState) {
 		__GameState = gameState;		
 		Log.println("GameState: " + gameState);
-	}
-	public GameState getGameState() {
-		return __GameState;		
 	}
 	
 	private ConnectionState __ConnectionState;
@@ -225,6 +236,8 @@ public class World {
 		setActionHandler(new ActionHandler(this, getGameView().stage)); // This handler handles keyboard/mouse actions. It will use world to send packets and update world objects (players/npcs).
 		setCharacters(new HashMap<Integer,Character>());
 		setMaps(new HashMap<Integer,Map>());
+		setItems(new HashMap<Integer,Point>());
+		//setItemDrops or add to/update map
 		setBot(new JoshBot(this));
 	}
 	
@@ -260,12 +273,12 @@ public class World {
 		getGameView().setGameScene(); // Display game
 		setGameState(GameState.LoadingScreen);
 		setLoadingInfo(0, "Loading game data.");
-		folder = new File("src\\data");
+		folder = new File(Paths.get("src","data").toString());
 		for (File file : folder.listFiles(new ExtensionFilter("adf"))) {
 			AsperetaFileReader.load(file, this);
 		}
 		setLoadingInfo(20, "Loading map data.");
-		folder = new File("src\\maps");
+		folder = new File(Paths.get("src","maps").toString());
 		for (File file : folder.listFiles(new ExtensionFilter("map"))) {
 			String fileName = file.getName();
 			int mapId = Integer.parseInt(fileName.substring(3, fileName.indexOf(".")));
@@ -329,6 +342,14 @@ public class World {
 				if(x >= -X_TILES/2 && x <= X_TILES/2 && y >= -Y_TILES/2 && y <= Y_TILES/2) {
 					context.setFill(Color.LIGHTBLUE);
 					context.fillRect((x+X_TILES/2)*tileWidth, (y+Y_TILES/2)*tileHeight, tileWidth, tileHeight);
+				}
+			}
+			for(Point p : getItems().values()) {
+				x = p.x - self.x;
+				y = p.y - self.y;
+				if(x >= -X_TILES/2 && x <= X_TILES/2 && y >= -Y_TILES/2 && y <= Y_TILES/2) {
+					context.setFill(Color.LIGHTYELLOW);
+					context.fillOval((x+X_TILES/2 + 0.1)*tileWidth, (y+Y_TILES/2 + 0.1)*tileHeight, tileWidth*0.8, tileHeight*0.8);
 				}
 			}
 			for(int i = 0; i < X_TILES; ++i) {

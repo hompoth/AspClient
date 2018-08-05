@@ -87,4 +87,7 @@ public class Communication extends Thread {
 	public void attack() throws IOException {
 		write("ATT");
 	}
+	public void pickup() throws IOException {
+		write("GET");
+	}
 }

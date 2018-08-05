@@ -6,5 +6,6 @@ public enum TaskState {
 	Wander,
 	BuyItems,
 	SellItems, 
-	AttackMob
+	AttackMob, 
+	PickUp
 }
