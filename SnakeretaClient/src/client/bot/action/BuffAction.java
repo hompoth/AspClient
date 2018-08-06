@@ -1,22 +1,55 @@
 package client.bot.action;
 
+import java.io.IOException;
+
+import client.Character;
+import client.World;
 import client.bot.Bot;
+import client.bot.JoshBot;
 
 public class BuffAction implements Action {
 
-	public BuffAction(Bot bot) {
-		// TODO Auto-generated constructor stub
+	private World __World;
+	private World getWorld() {
+		return __World;
+	}
+	private void setWorld(World world) {
+		__World = world;
+	}
+	private JoshBot __Bot;
+	private JoshBot getBot() {
+		return __Bot;
+	}
+	private void setBot(JoshBot bot) {
+		__Bot = bot;
 	}
 
-	@Override
+	private long __Instant;
 	public long getInstant() {
-		// TODO Auto-generated method stub
-		return 0;
+		return __Instant;
+	}
+	private void setInstant(long instant) {
+		__Instant = instant;
+	}
+	
+	private Character __Self;
+	public Character getSelf() {
+		return __Self;
+	}
+	private void setSelf(Character self) {
+		__Self = self;
+	}
+	
+	public BuffAction(JoshBot bot) {
+		setWorld(bot.getWorld());
+		setBot(bot);
+		setSelf(getWorld().getSelf());
+		setInstant(System.nanoTime());
 	}
 
-	@Override
-	public boolean handle() {
-		// TODO Auto-generated method stub
+	public boolean handle() throws IOException {
+		getWorld().getCommunication().use(1);
+		setInstant(System.nanoTime() + 1000_000_000L * 60 * 29);
 		return false;
 	}
 

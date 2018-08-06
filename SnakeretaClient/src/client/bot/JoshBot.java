@@ -121,7 +121,7 @@ public class JoshBot implements Bot {
 			Task task = getTaskQueue().peek();
 			if(task.getInstant() < System.nanoTime()) {
 				boolean taskDone = task.handle();
-				Log.println(task.getClass());
+				//Log.println(task.getClass());
 				getTaskQueue().remove(task);
 				if(!taskDone) { // Re-add task and re-compute instant priority
 					addTask(task);

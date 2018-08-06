@@ -39,12 +39,27 @@ public class World {
 	private int X_TILES = 13;
 	private int Y_TILES = 9;
 	
-	private HashMap<Integer,Point> __Items;
-	public HashMap<Integer,Point> getItems() {
+	private HashMap<String,Point> __Items;
+	public HashMap<String,Point> getItems() {
 		return __Items;
 	}
-	public void setItems(HashMap<Integer,Point> items) {
+	public void setItems(HashMap<String,Point> items) {
 		__Items = items;
+	}
+	
+	private int[] __Group;
+	public int[] getGroup(){
+		return __Group;
+	}
+	public void setGroup(int[] group) {
+		__Group = group;
+	}
+	public boolean groupContains(int loginId) {
+		for(int id : getGroup()) {
+			if(id == loginId) return true;
+			if(id == 0) return false;
+		}
+		return false;
 	}
 	
 	private HashMap<Integer,Character> __Characters;
@@ -235,8 +250,9 @@ public class World {
 		setMessageBox(new MessageBox());
 		setActionHandler(new ActionHandler(this, getGameView().stage)); // This handler handles keyboard/mouse actions. It will use world to send packets and update world objects (players/npcs).
 		setCharacters(new HashMap<Integer,Character>());
+		setGroup(new int[10]);
 		setMaps(new HashMap<Integer,Map>());
-		setItems(new HashMap<Integer,Point>());
+		setItems(new HashMap<String,Point>());
 		//setItemDrops or add to/update map
 		setBot(new JoshBot(this));
 	}

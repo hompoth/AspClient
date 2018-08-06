@@ -79,14 +79,14 @@ public class WanderTask implements Task {
 		// Use simulated annealing to create optimal path
 		// Loop through optimal path and choose closest node to start on. Then cycle on the optimal path
 		setOptimalPath(new ArrayList<Point>());
-		if(getWorld().getLevel() <= 25) {
+		if(getWorld().getLevel() <= 20) {
 			getOptimalPath().add(new Point(11,14));
 			getOptimalPath().add(new Point(11,55));
 			getOptimalPath().add(new Point(40,45));
 			getOptimalPath().add(new Point(42,17));
 		}
 		else {
-			getOptimalPath().add(new Point(21,96));
+			getOptimalPath().add(new Point(12,95));
 			getOptimalPath().add(new Point(10,96));
 			getOptimalPath().add(new Point(9,90));
 			getOptimalPath().add(new Point(9,81));

@@ -13,6 +13,7 @@ import client.packet.event.DisplayEvent;
 import client.packet.event.EquipmentInfoEvent;
 import client.packet.event.EraseObjectEvent;
 import client.packet.event.FacingEvent;
+import client.packet.event.GroupUpdateEvent;
 import client.packet.event.HealthManaEvent;
 import client.packet.event.InventoryInfoEvent;
 import client.packet.event.ItemDropEvent;
@@ -65,6 +66,7 @@ public class PacketHandler {
 		this.stringToEvent.put("BT", DisplayEvent::new);
 		this.stringToEvent.put("VC", HealthManaEvent::new); // hp/mp
 		this.stringToEvent.put("EOB", EraseObjectEvent::new);
+		this.stringToEvent.put("GUD", GroupUpdateEvent::new);
 		// TODO: Create event classes for any temporary events
 		this.stringToEvent.put("TNL", TempEvent::new);
 		this.stringToEvent.put("WPS", TempEvent::new);
@@ -74,7 +76,7 @@ public class PacketHandler {
     }
     
     public synchronized boolean addEvent(String message) {
-        Log.println("---Packet: "+message);
+        //Log.println("---Packet: "+message);
         for (String key : stringToEvent.keySet()) {
             if (message.startsWith(key)) {
                 Packet e = stringToEvent.get(key).get();

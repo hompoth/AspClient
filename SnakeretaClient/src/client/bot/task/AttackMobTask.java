@@ -79,7 +79,7 @@ public class AttackMobTask implements Task {
 			return true;
 		}
 		getBot().clearAttackPoints();
-		Character target = getBot().getAttackTarget(5);		
+		Character target = getBot().getAttackTarget(15);		
 		if(target == null) {
 			getBot().setTaskState(TaskState.Idle);
 			getBot().setCurrentTarget(null);

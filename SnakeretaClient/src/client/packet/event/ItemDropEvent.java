@@ -25,7 +25,7 @@ public class ItemDropEvent extends Packet {
     	// add color
     	
     	world.getTile(x,y).setItem(item);
-    	world.getItems().put(itemId, new Point(x,y));
+    	world.getItems().put(x+","+y, new Point(x,y));
     }
 }
 

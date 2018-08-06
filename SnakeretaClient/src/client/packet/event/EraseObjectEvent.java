@@ -16,8 +16,6 @@ public class EraseObjectEvent extends Packet {
 	    	
 	    	Item oldItem = world.getTile(x, y).getItem();
 	    	world.getTile(x, y).setItem(null);
-	    	if(oldItem != null) {
-	    		world.getItems().remove(oldItem.getItemId());
-	    	}
+    		world.getItems().remove(x+","+y);
 	    }
 }

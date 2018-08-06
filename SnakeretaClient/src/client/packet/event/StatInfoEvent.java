@@ -16,6 +16,8 @@ public class StatInfoEvent extends Packet {
 			world.setGuild(tokens[0]);
 			world.setClassName(tokens[2]);
 			world.setLevel(Integer.parseInt(tokens[3]));
+			// SNFguildname,,classname,level,max_hp,max_mp,max_sp,cur_,cur_mp,cur_sp,
+		    // stat_str,stat_sta,stat_int,stat_dex,ac,res_f,res_w,res_e,res_a,res_s,gold
 		}
 		catch (Exception e) {
 			Log.println("StatInfoEvent: " + e.toString());

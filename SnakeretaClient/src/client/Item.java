@@ -2,18 +2,18 @@ package client;
 
 public class Item {
 
-	private int __ItemId;
 	public String name;
 	public int stack;
-	public int getItemId() {
-		return __ItemId;
+	private int __TileGraphicId;
+	public int getTileGraphicId() {
+		return __TileGraphicId;
 	}
-	public void setItemId(int item) {
-		__ItemId = item;
+	public void setTileGraphicId(int tileGraphicId) {
+		__TileGraphicId = tileGraphicId;
 	}
 	
-	public Item(int itemId) {
-		setItemId(itemId);
+	public Item(int tileGraphicId) {
+		setTileGraphicId(tileGraphicId);
 	}
 
 }

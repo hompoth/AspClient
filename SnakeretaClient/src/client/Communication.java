@@ -90,4 +90,8 @@ public class Communication extends Thread {
 	public void pickup() throws IOException {
 		write("GET");
 	}
+	public void groupAdd(String name) throws IOException {
+		write("/groupadd "+name);
+		
+	}
 }
