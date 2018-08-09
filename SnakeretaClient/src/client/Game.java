@@ -127,7 +127,7 @@ public class Game implements Runnable {
 	            dialog.initOwner(gameView.stage);
 	            VBox dialogVbox = new VBox(20);
 	            dialogVbox.getChildren().add(new Text("Error:\n"+ e.getMessage()));
-	            Chatbox.showLabel(e.getMessage());	// display in new chatbox
+//	            Chatbox.showLabel(e.getMessage());	// display in new chatbox
 	            Scene dialogScene = new Scene(dialogVbox, 250, 50);
 	            dialogVbox.setPadding(new Insets(5));
 	            dialog.setScene(dialogScene);
