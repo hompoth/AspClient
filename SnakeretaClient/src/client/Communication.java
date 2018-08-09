@@ -87,4 +87,13 @@ public class Communication extends Thread {
 	public void attack() throws IOException {
 		write("ATT");
 	}
+	public void chat(String message) throws IOException {
+		write(";"+message);
+	}
+	public void command(String message) throws IOException {
+		write(message);
+	}
+	public void directWrite(String message) throws IOException {
+		write(message);
+	}
 }

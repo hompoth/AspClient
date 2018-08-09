@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.net.Socket;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -260,12 +261,12 @@ public class World {
 		getGameView().setGameScene(); // Display game
 		setGameState(GameState.LoadingScreen);
 		setLoadingInfo(0, "Loading game data.");
-		folder = new File("src\\data");
+		folder = new File(Paths.get("src","data").toString());
 		for (File file : folder.listFiles(new ExtensionFilter("adf"))) {
 			AsperetaFileReader.load(file, this);
 		}
 		setLoadingInfo(20, "Loading map data.");
-		folder = new File("src\\maps");
+		folder = new File(Paths.get("src","maps").toString());
 		for (File file : folder.listFiles(new ExtensionFilter("map"))) {
 			String fileName = file.getName();
 			int mapId = Integer.parseInt(fileName.substring(3, fileName.indexOf(".")));

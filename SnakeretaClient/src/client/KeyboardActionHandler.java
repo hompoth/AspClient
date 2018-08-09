@@ -27,31 +27,55 @@ public class KeyboardActionHandler implements EventHandler<KeyEvent> {
 		KeyCode code = event.getCode();
 		if(type == KeyEvent.KEY_PRESSED) {
 			switch(code) {
+			case C:
+				new Chatbox(world);
+				break;
+			case T:
+				try {
+					comm.chat("Hey");
+				} catch (IOException e2) {
+					e2.printStackTrace();
+				}
+				break;
+			case Y:
+				try {
+					comm.command("/tell Kurtis yo");
+				} catch (IOException e3) {
+					e3.printStackTrace();
+				}
+				break;
 			case CONTROL:
 				world.toggleBot();
 				Log.println("Toggle bot");
 				break;
-				case LEFT:
-				case RIGHT:
-				case UP:
-				case DOWN:
-					try {
-						Direction newDirection = Direction.fromKeyCode(code);
-						if(facing == newDirection) {
-							if(world.getSelf().canMove()) {
-								comm.move(facing);
-							}
-							comm.refresh();
+			case SPACE:
+				try {
+					comm.attack();
+				} catch (IOException e1) {
+					e1.printStackTrace();
+				}
+				break;
+			case LEFT:
+			case RIGHT:
+			case UP:
+			case DOWN:
+				try {
+					Direction newDirection = Direction.fromKeyCode(code);
+					if(facing == newDirection) {
+						if(world.getSelf().canMove()) {
+							comm.move(facing);
 						}
-						facing = newDirection;
-						comm.face(facing);
-						moving = true;
-					} catch (IOException e) {
-						e.printStackTrace();
+						comm.refresh();
 					}
-					break;
-				default:
-					break;
+					facing = newDirection;
+					comm.face(facing);
+					moving = true;
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+				break;
+			default:
+				break;
 			}
 			activeKeyPress.put(code, true);
 		} else if(type == KeyEvent.KEY_RELEASED) {
