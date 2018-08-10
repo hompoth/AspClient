@@ -119,7 +119,6 @@ public class Game implements Runnable {
 		}
 		catch (Exception e) {
 			Platform.runLater(() -> {
-				Log.println(e.getStackTrace());
 				e.printStackTrace();
 				// TODO: Make the popup appear nicer
 	            final Stage dialog = new Stage();
