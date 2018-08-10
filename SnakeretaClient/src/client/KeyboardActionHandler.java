@@ -27,6 +27,9 @@ public class KeyboardActionHandler implements EventHandler<KeyEvent> {
 			KeyCode code = event.getCode();
 			if(type == KeyEvent.KEY_PRESSED) {
 				switch(code) {
+     		case C:
+				  new Chatbox(world);
+				break;
 				case SPACE:
 					comm.attack();
 					break;
