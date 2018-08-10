@@ -110,7 +110,7 @@ public class JoshBot implements Bot {
 	}
 	public void addTask(Task task) {
 		for(Task t : getTaskQueue()) { // Don't add the same task twice
-			if(t.getClass() == task.getClass()) {
+			if(t.getClass().equals(task.getClass())) {
 				return;
 			}
 		}
@@ -146,7 +146,7 @@ public class JoshBot implements Bot {
 	}
 	public void addAction(Action action) {
 		for(Action a : getActionQueue()) { // Don't add the same action twice
-			if(a.getClass() == action.getClass()) {
+			if(a.getClass().equals(action.getClass())) {
 				return;
 			}
 		}
@@ -155,7 +155,9 @@ public class JoshBot implements Bot {
 	private void handleAction() throws IOException {
 		if(!getActionQueue().isEmpty()) {
 			Action action = getActionQueue().peek();
+			//Log.println(action.getClass()+"----"+action.getInstant());
 			if(action.getInstant() < System.nanoTime()) {
+				//Log.println("2"+action.getClass()+"----"+action.getInstant());
 				boolean actionDone = action.handle();
 				getActionQueue().remove(action);
 				if(!actionDone) { // Re-add action and re-compute instant priority
@@ -232,7 +234,7 @@ public class JoshBot implements Bot {
 	public void loadDefaultQueues() {
 		addTask(new UpdateTask(this));
 		addAction(new AttackAction(this));
-		//addAction(new BuffAction(this));
+		addAction(new BuffAction(this));
 		addAction(new HealAction(this));
 		addAction(new MoveAction(this));
 	}
@@ -293,9 +295,11 @@ public class JoshBot implements Bot {
 		return (minDistance <= requiredDistance)? closestCharacter:null;
 	}
 	public int distance(Character a, Character b) {
+		if(a == null || b == null) return 0;
 		return Math.abs(a.x-b.x) + Math.abs(a.y-b.y);
 	}
 	public int distance(Point a, Point b) {
+		if(a == null || b == null) return 0;
 		return Math.abs(a.x-b.x) + Math.abs(a.y-b.y);
 	}
 	public Point getClosestAttackPoint() {
@@ -349,5 +353,34 @@ public class JoshBot implements Bot {
 		if(currentTarget != null && currentTarget.loginId == loginId) {
 			setCurrentTarget(null);
 		}
+	}
+	public Point getFollowPoint() {
+		Character self, player;
+		int x,y,x2,y2;
+		int radius = 3;
+		int groupLoginId = getWorld().getGroup()[0];
+		if(groupLoginId == 0) {
+			return null;
+		}
+		
+		self = getWorld().getSelf();
+		player = getWorld().getCharacter(groupLoginId);
+
+		if(distance(self,player) <= radius) {
+			return new Point(self.x,self.y);
+		}
+		
+		x = self.x;
+		y = self.y;
+		x2 = player.x;
+		y2 = player.y;
+		
+		double angle = Math.atan2(y2-y, x2-x);
+		int diffX = (int) Math.round(radius * Math.cos(angle));
+		int diffY = (int) Math.round(radius * Math.sin(angle));
+		
+		Point newLocation = new Point(x+diffX,y+diffY);
+		
+		return newLocation;
 	}
 }

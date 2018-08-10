@@ -1,14 +1,13 @@
-package client.bot.action;
-
-import java.io.IOException;
+package client.bot.task;
 
 import client.Character;
 import client.Log;
 import client.World;
-import client.bot.Bot;
+import client.bot.AttackType;
 import client.bot.JoshBot;
+import client.bot.Point;
 
-public class HealAction implements Action {
+public class FollowGroupTask implements Task {
 
 	private World __World;
 	private World getWorld() {
@@ -41,28 +40,25 @@ public class HealAction implements Action {
 		__Self = self;
 	}
 	
-	public HealAction(JoshBot bot) {
+	public FollowGroupTask(JoshBot bot) {
 		setWorld(bot.getWorld());
 		setBot(bot);
 		setSelf(getWorld().getSelf());
 		setInstant(System.nanoTime());
 	}
 
-	public boolean handle() throws IOException {
-		for(Integer i : getWorld().getGroup()) {
-			if(i == 0) continue;
-			Character c = getWorld().getCharacter(i);
-			if(c != null) {
-				if(c.hp < 95) {
-					getWorld().getCommunication().cast(1, c.loginId);
-				}
-			}
+	public boolean handle() {
+		if(getBot().getTaskState() != TaskState.FollowGroup) {
+			getBot().setTaskState(TaskState.Idle);
+			return true;
 		}
-		if(getSelf().hp < 90) {
-			getWorld().getCommunication().cast(1, getSelf().loginId);
+		Point followPosition = getBot().getFollowPoint();
+		if(followPosition == null) {
+			getBot().setTaskState(TaskState.Idle);
+			return true;
 		}
+		getBot().setCurrentPoint(followPosition);
 		setInstant(System.nanoTime());
 		return false;
 	}
-
 }

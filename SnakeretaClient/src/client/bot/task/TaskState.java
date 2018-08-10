@@ -7,5 +7,6 @@ public enum TaskState {
 	BuyItems,
 	SellItems, 
 	AttackMob, 
-	PickUp
+	PickUp, 
+	FollowGroup
 }

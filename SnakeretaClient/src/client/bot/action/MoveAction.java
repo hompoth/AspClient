@@ -49,7 +49,7 @@ public class MoveAction implements Action {
 		if(facing != null) {
 			getWorld().getCommunication().move(facing);
 		}
-		setInstant(System.nanoTime() + 400_000_000L);
+		setInstant(System.nanoTime() + 350_000_000L);
 		return false;
 	}
 

@@ -35,9 +35,6 @@ public class World {
 		LoadingScreen,
 		Map
 	}
-
-	private int X_TILES = 13;
-	private int Y_TILES = 9;
 	
 	private HashMap<String,Point> __Items;
 	public HashMap<String,Point> getItems() {
@@ -320,110 +317,97 @@ public class World {
 	
 	// Tiles squares, players circles
 	public void drawMap() {
-		GameView gv = this.getGameView();
-		GraphicsContext context = gv.context;
-		context.setFont(new Font(26.0).font("Calibri", FontWeight.BOLD, 26.0));
-		double width = gv.width;
-		double height = gv.height;
-		double tileWidth = width/X_TILES, tileHeight = height/Y_TILES;
 		Character self = getSelf();
+		GameView gv = this.getGameView();
 		
-		context.setFill(Color.BLACK);
-		context.fillRect(0, 0, width, height);
+		gv.clear();
 		
 		if(self != null) {
 			int x,y;
-			for(int i = 0; i < X_TILES; ++i) {
-				for(int j = 0; j < Y_TILES; ++j) {
-					x = i + self.x - X_TILES/2;
-					y = j + self.y - Y_TILES/2;
-
-					if(x >= 1 && x <= 100 && y >= 1 && y <= 100) {
-						context.setFill(Color.BLANCHEDALMOND);
-						context.fillRect(i*tileWidth, j*tileHeight, tileWidth, tileHeight);
+			gv.setCenter(self.x, self.y);
+			{
+				Point p = null;
+				while((p = gv.getNextPoint(p)) != null) {
+					x = p.x;
+					y = p.y;
+					Tile tile = getTile(x,y);
+					if(tile != null && tile.block) { //if(blockedTile(x,y)) {
+						gv.fillRect(x, y, 1, 1, Color.LIGHTSLATEGRAY);	
 					}
+					else {
+						gv.fillRect(x, y, 1, 1, Color.BLANCHEDALMOND);
+					}	
 				}
 			}
 			for(Point p : ((JoshBot)getBot()).getPath()) {
-				x = p.x - self.x;
-				y = p.y - self.y;
-				if(x >= -X_TILES/2 && x <= X_TILES/2 && y >= -Y_TILES/2 && y <= Y_TILES/2) {
-					context.setFill(Color.RED);
-					context.fillRect((x+X_TILES/2)*tileWidth, (y+Y_TILES/2)*tileHeight, tileWidth, tileHeight);
+				x = p.x;
+				y = p.y;
+				gv.fillRect(x, y, 1, 1, Color.PALEVIOLETRED);
+			}
+			{
+				Point p = ((JoshBot)getBot()).getCurrentPoint();
+				if(p != null) {
+					x = p.x;
+					y = p.y;
+					gv.fillRect(x, y, 1, 1, Color.INDIANRED);
 				}
 			}
 			for(Point p : ((JoshBot)getBot()).getAttackPoints()) {
-				x = p.x - self.x;
-				y = p.y - self.y;
-				if(x >= -X_TILES/2 && x <= X_TILES/2 && y >= -Y_TILES/2 && y <= Y_TILES/2) {
-					context.setFill(Color.LIGHTBLUE);
-					context.fillRect((x+X_TILES/2)*tileWidth, (y+Y_TILES/2)*tileHeight, tileWidth, tileHeight);
-				}
+				x = p.x;
+				y = p.y;
+				gv.fillRect(x, y, 1, 1, Color.LIGHTBLUE);
 			}
 			for(Point p : getItems().values()) {
-				x = p.x - self.x;
-				y = p.y - self.y;
-				if(x >= -X_TILES/2 && x <= X_TILES/2 && y >= -Y_TILES/2 && y <= Y_TILES/2) {
-					context.setFill(Color.LIGHTYELLOW);
-					context.fillOval((x+X_TILES/2 + 0.1)*tileWidth, (y+Y_TILES/2 + 0.1)*tileHeight, tileWidth*0.8, tileHeight*0.8);
-				}
+				x = p.x;
+				y = p.y;
+				gv.fillOval(x, y, 0.8, 0.8, Color.LIGHTYELLOW);
 			}
-			for(int i = 0; i < X_TILES; ++i) {
-				for(int j = 0; j < Y_TILES; ++j) {
-					x = i + self.x - X_TILES/2;
-					y = j + self.y - Y_TILES/2;
-
-					if(x >= 1 && x <= 100 && y >= 1 && y <= 100) {
-						if(blockedTile(x,y)) {
-							context.setFill(Color.LIGHTSLATEGRAY);
-							context.fillRect(i*tileWidth, j*tileHeight, tileWidth, tileHeight);
-						}
-					}
+			/*{
+				Point p;
+				while(p = getNextPoint(p)) {
+					x = p.x;
+					y = p.y;
+					if(blockedTile(x,y)) {
+						gv.fillRect(x, y, 1, 1, Color.LIGHTSLATEGRAY);
+					}	
 				}
-			}
+			}*/
+			Color color;
 			for(Character c : getCharacters().values()) {
-				if(c.x >= 1 && c.x <= 100 && c.y >= 1 && c.y <= 100) {
-					x = c.x - self.x;
-					y = c.y - self.y;
-					if(x >= -X_TILES/2 && x <= X_TILES/2 && y >= -Y_TILES/2 && y <= Y_TILES/2) {
-						if(c.characterType == CharacterType.Player) {
-							context.setFill(Color.LIGHTGREEN);
-						}
-						else if(c.characterType == CharacterType.Admin) {
-							context.setFill(Color.PLUM);
-						}
-						else {
-							context.setFill(Color.BURLYWOOD);
-						}
-						context.fillOval((x+X_TILES/2)*tileWidth, (y+Y_TILES/2)*tileHeight, tileWidth, tileHeight);
-						
-						double x2 = 0, y2 = 0;
-						switch(c.facing) {
-						case UP:
-							x2 = 0.5;
-							break;
-						case DOWN:
-							x2 = 0.5;
-							y2 = 1;
-							break;
-						case LEFT:
-							y2 = 0.5;
-							break;
-						case RIGHT:
-							x2 = 1;
-							y2 = 0.5;
-							break;
-						}
-						context.setFill(Color.CADETBLUE);
-						context.fillOval(((x+X_TILES/2) + x2 - 0.1) * tileWidth, ((y+Y_TILES/2) + y2 - 0.1) * tileHeight, tileWidth * 0.2, tileHeight * 0.2);
-						context.setFill(Color.FLORALWHITE);
-						context.fillRect((x+X_TILES/2 + 0.1)*tileWidth, (y+Y_TILES/2 + 0.2)*tileHeight, tileWidth * 0.8, tileHeight * 0.1);
-						context.setFill(Color.INDIANRED);
-						context.fillRect((x+X_TILES/2 + 0.1)*tileWidth, (y+Y_TILES/2 + 0.2)*tileHeight, tileWidth * 0.8 * c.hp / 100, tileHeight * 0.1);
-						context.setFill(Color.DARKSLATEBLUE);
-						context.fillText(c.name + " ["+c.hp+"]", (x+X_TILES/2)*tileWidth, (y+Y_TILES/2 + 0.2)*tileHeight);
+				x = c.x;
+				y = c.y;
+				if(c.characterType == CharacterType.Player) {
+					color = Color.LIGHTGREEN;
+				}
+				else if(c.characterType == CharacterType.Admin) {
+					color = Color.PLUM;
+				}
+				else {
+					color = Color.BURLYWOOD;
+				}
+				gv.fillOval(x, y, 0.8, 0.8, color);
+				
+				double x2 = 0, y2 = 0;
+				if(c.facing != null) {
+					switch(c.facing) {
+					case UP:
+						y2 = -0.5;
+						break;
+					case DOWN:
+						y2 = 0.5;
+						break;
+					case LEFT:
+						x2 = -0.5;
+						break;
+					case RIGHT:
+						x2 = 0.5;
+						break;
 					}
 				}
+				gv.fillOval(x + x2, y + y2, 0.2, 0.2, Color.CADETBLUE);
+				gv.fillRect(x, y, 0.8, 0.1, Color.FLORALWHITE);
+				gv.fillRect(x, y, 0.8 * c.hp / 100, 0.1, Color.INDIANRED);
+				gv.fillText(x, y, c.name + " ["+c.hp+"]", Color.DARKSLATEBLUE);
 			}
 		}
 	}

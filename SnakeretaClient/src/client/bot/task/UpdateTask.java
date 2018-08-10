@@ -55,8 +55,12 @@ public class UpdateTask implements Task {
 				getWorld().getCommunication().groupAdd(c.name);
 			}
 		}
-		if(getBot().getAttackTarget(15) != null && state != TaskState.AttackMob) {
-  //              && !((state == TaskState.GoToWaypoint || state == TaskState.Idle) && !self.isSurrounded(getWorld()))) {
+		if(state != TaskState.FollowGroup && getWorld().getClassName().equals("Priest") && getBot().getFollowPoint() != null) {
+			getBot().setTaskState(TaskState.FollowGroup);
+			getBot().addTask(new FollowGroupTask(getBot()));
+		}
+		else if(state != TaskState.AttackMob && getBot().getAttackTarget(5) != null) {
+	    //  	&& !((state == TaskState.GoToWaypoint || state == TaskState.Idle) && !self.isSurrounded(getWorld()))) {
 			getBot().setTaskState(TaskState.AttackMob);
 			getBot().addTask(new AttackMobTask(getBot()));
 		}

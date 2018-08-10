@@ -3,6 +3,7 @@ package client.bot.action;
 import java.io.IOException;
 
 import client.Character;
+import client.Log;
 import client.World;
 import client.bot.Bot;
 import client.bot.JoshBot;
@@ -45,11 +46,15 @@ public class BuffAction implements Action {
 		setBot(bot);
 		setSelf(getWorld().getSelf());
 		setInstant(System.nanoTime());
+		lastInstant = System.nanoTime();
 	}
-
+	long lastInstant;
 	public boolean handle() throws IOException {
-		getWorld().getCommunication().use(1);
-		setInstant(System.nanoTime() + 1000_000_000L * 60 * 29);
+		if(lastInstant + 1_000_000_000L * 15 < getInstant()) {
+			getWorld().getCommunication().cast(2,getSelf().loginId);
+			lastInstant = getInstant();
+		}
+		setInstant(System.nanoTime());
 		return false;
 	}
 
