@@ -260,12 +260,12 @@ public class World {
 		getGameView().setGameScene(); // Display game
 		setGameState(GameState.LoadingScreen);
 		setLoadingInfo(0, "Loading game data.");
-		folder = new File("src\\data");
+		folder = new File("src/data");
 		for (File file : folder.listFiles(new ExtensionFilter("adf"))) {
 			AsperetaFileReader.load(file, this);
 		}
 		setLoadingInfo(20, "Loading map data.");
-		folder = new File("src\\maps");
+		folder = new File("src/maps");
 		for (File file : folder.listFiles(new ExtensionFilter("map"))) {
 			String fileName = file.getName();
 			int mapId = Integer.parseInt(fileName.substring(3, fileName.indexOf(".")));
