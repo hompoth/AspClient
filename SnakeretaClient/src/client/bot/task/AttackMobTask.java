@@ -74,11 +74,8 @@ public class AttackMobTask implements Task {
 	public boolean handle() {
 		Character currentTarget = getBot().getCurrentTarget();
 		if(getBot().getTaskState() != TaskState.AttackMob) {
-			Log.println("-------" + getBot().getTaskState());
 			getBot().setTaskState(TaskState.Idle);
-			Log.println("-------" + getBot().getTaskState());
 			getBot().setCurrentTarget(null);
-			Log.println("-------" + getBot().getTaskState());
 			return true;
 		}
 		getBot().clearAttackPoints();
@@ -86,7 +83,6 @@ public class AttackMobTask implements Task {
 		if(target == null) {
 			getBot().setTaskState(TaskState.Idle);
 			getBot().setCurrentTarget(null);
-			Log.println("15123----------------");
 			return true;
 		}
 		if(getLastTargetAttackedId() == target.loginId) {
@@ -96,7 +92,6 @@ public class AttackMobTask implements Task {
 					getBot().ignoreLoginId(target.loginId);
 					getBot().setTaskState(TaskState.Idle);
 					getBot().setCurrentTarget(null);
-					Log.println("123213----------------");
 					return true;
 				}
 			}
@@ -105,15 +100,13 @@ public class AttackMobTask implements Task {
 			setLastTargetAttackedId(currentTarget.loginId);
 			setLastTargetInitialHp(currentTarget.hp);
 			setTimeFirstAttackedLastTarget(System.nanoTime());
-			Log.println("1----------------------------"+getTimeFirstAttackedLastTarget());
 		}
 		
-		getBot().addAttackPoints(target, AttackType.Melee,1);
+		getBot().addAttackPoints(target, AttackType.Melee,1,1);
 		Point attackPosition = getBot().getClosestAttackPoint();
 		getBot().setCurrentPoint(attackPosition);
 		getBot().setCurrentTarget(target);
 		setInstant(System.nanoTime());
-		Log.println("1234----------------");
 		return false;
 	}
 }

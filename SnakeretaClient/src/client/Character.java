@@ -24,7 +24,6 @@ public class Character {
 	public Equipment weapon;
 	public boolean invisible;
 	public int face;
-	public String className;
 	private long lastMoveInstance;
 	public Character(int loginId) {
 		this.loginId = loginId;

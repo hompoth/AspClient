@@ -4,10 +4,13 @@ import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.net.Socket;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 import javax.imageio.ImageIO;
 
@@ -32,16 +35,36 @@ public class World {
 		LoadingScreen,
 		Map
 	}
-
-	private int X_TILES = 13;
-	private int Y_TILES = 9;
+	
+	private HashMap<String,Point> __Items;
+	public HashMap<String,Point> getItems() {
+		return __Items;
+	}
+	public void setItems(HashMap<String,Point> items) {
+		__Items = items;
+	}
+	
+	private int[] __Group;
+	public int[] getGroup(){
+		return __Group;
+	}
+	public void setGroup(int[] group) {
+		__Group = group;
+	}
+	public boolean groupContains(int loginId) {
+		for(int id : getGroup()) {
+			if(id == loginId) return true;
+			if(id == 0) return false;
+		}
+		return false;
+	}
 	
 	private HashMap<Integer,Character> __Characters;
-	public void setCharacters(HashMap<Integer,Character> characters) {
-		__Characters = characters;		
-	}
 	public HashMap<Integer,Character> getCharacters() {
 		return __Characters;		
+	}
+	public void setCharacters(HashMap<Integer,Character> characters) {
+		__Characters = characters;		
 	}
 	public Character getCharacter(int loginId) {
 		return getCharacters().get(loginId);
@@ -71,20 +94,20 @@ public class World {
 	public int getSelfId() {
 		return __SelfId;		
 	}
-	public void setSelfId(int loginId) {
-		__SelfId = loginId;	
-	}
 	public Character getSelf() {
 		return getCharacter(getSelfId());
 	}
+	public void setSelfId(int loginId) {
+		__SelfId = loginId;	
+	}
 	
 	private GameState __GameState;
+	public GameState getGameState() {
+		return __GameState;		
+	}
 	public void setGameState(GameState gameState) {
 		__GameState = gameState;		
 		Log.println("GameState: " + gameState);
-	}
-	public GameState getGameState() {
-		return __GameState;		
 	}
 	
 	private ConnectionState __ConnectionState;
@@ -224,7 +247,10 @@ public class World {
 		setMessageBox(new MessageBox());
 		setActionHandler(new ActionHandler(this, getGameView().stage)); // This handler handles keyboard/mouse actions. It will use world to send packets and update world objects (players/npcs).
 		setCharacters(new HashMap<Integer,Character>());
+		setGroup(new int[10]);
 		setMaps(new HashMap<Integer,Map>());
+		setItems(new HashMap<String,Point>());
+		//setItemDrops or add to/update map
 		setBot(new JoshBot(this));
 	}
 	
@@ -260,12 +286,20 @@ public class World {
 		getGameView().setGameScene(); // Display game
 		setGameState(GameState.LoadingScreen);
 		setLoadingInfo(0, "Loading game data.");
+<<<<<<< HEAD
 		folder = new File("src/data");
+=======
+		folder = new File(Paths.get("src","data").toString());
+>>>>>>> 82c6be7739b8e611e7cecd9e45ade314e8b9d22b
 		for (File file : folder.listFiles(new ExtensionFilter("adf"))) {
 			AsperetaFileReader.load(file, this);
 		}
 		setLoadingInfo(20, "Loading map data.");
+<<<<<<< HEAD
 		folder = new File("src/maps");
+=======
+		folder = new File(Paths.get("src","maps").toString());
+>>>>>>> 82c6be7739b8e611e7cecd9e45ade314e8b9d22b
 		for (File file : folder.listFiles(new ExtensionFilter("map"))) {
 			String fileName = file.getName();
 			int mapId = Integer.parseInt(fileName.substring(3, fileName.indexOf(".")));
@@ -291,102 +325,97 @@ public class World {
 	
 	// Tiles squares, players circles
 	public void drawMap() {
-		GameView gv = this.getGameView();
-		GraphicsContext context = gv.context;
-		context.setFont(new Font(26.0).font("Calibri", FontWeight.BOLD, 26.0));
-		double width = gv.width;
-		double height = gv.height;
-		double tileWidth = width/X_TILES, tileHeight = height/Y_TILES;
 		Character self = getSelf();
+		GameView gv = this.getGameView();
 		
-		context.setFill(Color.BLACK);
-		context.fillRect(0, 0, width, height);
+		gv.clear();
 		
 		if(self != null) {
 			int x,y;
-			for(int i = 0; i < X_TILES; ++i) {
-				for(int j = 0; j < Y_TILES; ++j) {
-					x = i + self.x - X_TILES/2;
-					y = j + self.y - Y_TILES/2;
-
-					if(x >= 1 && x <= 100 && y >= 1 && y <= 100) {
-						context.setFill(Color.BLANCHEDALMOND);
-						context.fillRect(i*tileWidth, j*tileHeight, tileWidth, tileHeight);
+			gv.setCenter(self.x, self.y);
+			{
+				Point p = null;
+				while((p = gv.getNextPoint(p)) != null) {
+					x = p.x;
+					y = p.y;
+					Tile tile = getTile(x,y);
+					if(tile != null && tile.block) { //if(blockedTile(x,y)) {
+						gv.fillRect(x, y, 1, 1, Color.LIGHTSLATEGRAY);	
 					}
+					else {
+						gv.fillRect(x, y, 1, 1, Color.BLANCHEDALMOND);
+					}	
 				}
 			}
 			for(Point p : ((JoshBot)getBot()).getPath()) {
-				x = p.x - self.x;
-				y = p.y - self.y;
-				if(x >= -X_TILES/2 && x <= X_TILES/2 && y >= -Y_TILES/2 && y <= Y_TILES/2) {
-					context.setFill(Color.RED);
-					context.fillRect((x+X_TILES/2)*tileWidth, (y+Y_TILES/2)*tileHeight, tileWidth, tileHeight);
+				x = p.x;
+				y = p.y;
+				gv.fillRect(x, y, 1, 1, Color.PALEVIOLETRED);
+			}
+			{
+				Point p = ((JoshBot)getBot()).getCurrentPoint();
+				if(p != null) {
+					x = p.x;
+					y = p.y;
+					gv.fillRect(x, y, 1, 1, Color.INDIANRED);
 				}
 			}
 			for(Point p : ((JoshBot)getBot()).getAttackPoints()) {
-				x = p.x - self.x;
-				y = p.y - self.y;
-				if(x >= -X_TILES/2 && x <= X_TILES/2 && y >= -Y_TILES/2 && y <= Y_TILES/2) {
-					context.setFill(Color.LIGHTBLUE);
-					context.fillRect((x+X_TILES/2)*tileWidth, (y+Y_TILES/2)*tileHeight, tileWidth, tileHeight);
-				}
+				x = p.x;
+				y = p.y;
+				gv.fillRect(x, y, 1, 1, Color.LIGHTBLUE);
 			}
-			for(int i = 0; i < X_TILES; ++i) {
-				for(int j = 0; j < Y_TILES; ++j) {
-					x = i + self.x - X_TILES/2;
-					y = j + self.y - Y_TILES/2;
-
-					if(x >= 1 && x <= 100 && y >= 1 && y <= 100) {
-						if(blockedTile(x,y)) {
-							context.setFill(Color.LIGHTSLATEGRAY);
-							context.fillRect(i*tileWidth, j*tileHeight, tileWidth, tileHeight);
-						}
-					}
-				}
+			for(Point p : getItems().values()) {
+				x = p.x;
+				y = p.y;
+				gv.fillOval(x, y, 0.8, 0.8, Color.LIGHTYELLOW);
 			}
+			/*{
+				Point p;
+				while(p = getNextPoint(p)) {
+					x = p.x;
+					y = p.y;
+					if(blockedTile(x,y)) {
+						gv.fillRect(x, y, 1, 1, Color.LIGHTSLATEGRAY);
+					}	
+				}
+			}*/
+			Color color;
 			for(Character c : getCharacters().values()) {
-				if(c.x >= 1 && c.x <= 100 && c.y >= 1 && c.y <= 100) {
-					x = c.x - self.x;
-					y = c.y - self.y;
-					if(x >= -X_TILES/2 && x <= X_TILES/2 && y >= -Y_TILES/2 && y <= Y_TILES/2) {
-						if(c.characterType == CharacterType.Player) {
-							context.setFill(Color.LIGHTGREEN);
-						}
-						else if(c.characterType == CharacterType.Admin) {
-							context.setFill(Color.PLUM);
-						}
-						else {
-							context.setFill(Color.BURLYWOOD);
-						}
-						context.fillOval((x+X_TILES/2)*tileWidth, (y+Y_TILES/2)*tileHeight, tileWidth, tileHeight);
-						
-						double x2 = 0, y2 = 0;
-						switch(c.facing) {
-						case UP:
-							x2 = 0.5;
-							break;
-						case DOWN:
-							x2 = 0.5;
-							y2 = 1;
-							break;
-						case LEFT:
-							y2 = 0.5;
-							break;
-						case RIGHT:
-							x2 = 1;
-							y2 = 0.5;
-							break;
-						}
-						context.setFill(Color.CADETBLUE);
-						context.fillOval(((x+X_TILES/2) + x2 - 0.1) * tileWidth, ((y+Y_TILES/2) + y2 - 0.1) * tileHeight, tileWidth * 0.2, tileHeight * 0.2);
-						context.setFill(Color.FLORALWHITE);
-						context.fillRect((x+X_TILES/2 + 0.1)*tileWidth, (y+Y_TILES/2 + 0.2)*tileHeight, tileWidth * 0.8, tileHeight * 0.1);
-						context.setFill(Color.INDIANRED);
-						context.fillRect((x+X_TILES/2 + 0.1)*tileWidth, (y+Y_TILES/2 + 0.2)*tileHeight, tileWidth * 0.8 * c.hp / 100, tileHeight * 0.1);
-						context.setFill(Color.DARKSLATEBLUE);
-						context.fillText(c.name + " ["+c.hp+"]", (x+X_TILES/2)*tileWidth, (y+Y_TILES/2 + 0.2)*tileHeight);
+				x = c.x;
+				y = c.y;
+				if(c.characterType == CharacterType.Player) {
+					color = Color.LIGHTGREEN;
+				}
+				else if(c.characterType == CharacterType.Admin) {
+					color = Color.PLUM;
+				}
+				else {
+					color = Color.BURLYWOOD;
+				}
+				gv.fillOval(x, y, 0.8, 0.8, color);
+				
+				double x2 = 0, y2 = 0;
+				if(c.facing != null) {
+					switch(c.facing) {
+					case UP:
+						y2 = -0.5;
+						break;
+					case DOWN:
+						y2 = 0.5;
+						break;
+					case LEFT:
+						x2 = -0.5;
+						break;
+					case RIGHT:
+						x2 = 0.5;
+						break;
 					}
 				}
+				gv.fillOval(x + x2, y + y2, 0.2, 0.2, Color.CADETBLUE);
+				gv.fillRect(x, y, 0.8, 0.1, Color.FLORALWHITE);
+				gv.fillRect(x, y, 0.8 * c.hp / 100, 0.1, Color.INDIANRED);
+				gv.fillText(x, y, c.name + " ["+c.hp+"]", Color.DARKSLATEBLUE);
 			}
 		}
 	}

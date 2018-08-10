@@ -11,7 +11,9 @@ import client.packet.event.CharacterInfoEvent;
 import client.packet.event.CharacterOffScreenEvent;
 import client.packet.event.DisplayEvent;
 import client.packet.event.EquipmentInfoEvent;
+import client.packet.event.EraseObjectEvent;
 import client.packet.event.FacingEvent;
+import client.packet.event.GroupUpdateEvent;
 import client.packet.event.HealthManaEvent;
 import client.packet.event.InventoryInfoEvent;
 import client.packet.event.ItemDropEvent;
@@ -37,15 +39,20 @@ public class PacketHandler {
     private volatile long lastId;
 
     public  PacketHandler(Communication comm) throws Exception {
+//    	Log.println(comm);
     	lastId = 0;
     	this.comm = comm;
         this.events = new LinkedHashMap<Long, Packet>();
         this.stringToEvent = new HashMap<String, Supplier<Packet>>();
+
+        //NOTE: See Goose.EventHandler for unknown commands
 		this.stringToEvent.put("LOK", LoginSuccessEvent::new);
 		this.stringToEvent.put("LNO", LoginFailEvent::new);
 		this.stringToEvent.put("PING", PingEvent::new);
 		this.stringToEvent.put("SCM", MapChangeEvent::new);
 		this.stringToEvent.put("$", MessageBoxEvent::new);
+		this.stringToEvent.put("^", MessageBoxEvent::new);
+		this.stringToEvent.put("#", MessageBoxEvent::new);
 		this.stringToEvent.put("SIS", InventoryInfoEvent::new);
 		this.stringToEvent.put("WNF", EquipmentInfoEvent::new);
 		this.stringToEvent.put("SSS", SpellInfoEvent::new);
@@ -63,6 +70,8 @@ public class PacketHandler {
 		this.stringToEvent.put("SNF", StatInfoEvent::new);
 		this.stringToEvent.put("BT", DisplayEvent::new);
 		this.stringToEvent.put("VC", HealthManaEvent::new); // hp/mp
+		this.stringToEvent.put("EOB", EraseObjectEvent::new);
+		this.stringToEvent.put("GUD", GroupUpdateEvent::new);
 		// TODO: Create event classes for any temporary events
 		this.stringToEvent.put("TNL", TempEvent::new);
 		this.stringToEvent.put("WPS", TempEvent::new);
@@ -72,8 +81,10 @@ public class PacketHandler {
     }
     
     public synchronized boolean addEvent(String message) {
+        //Log.println("---Packet: "+message);
         for (String key : stringToEvent.keySet()) {
             if (message.startsWith(key)) {
+            	Log.println(" --> " + message);
                 Packet e = stringToEvent.get(key).get();
                 e.setId(++lastId);
                 e.setMessage(message);
