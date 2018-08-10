@@ -13,6 +13,7 @@ import javafx.stage.Stage;
 
 // This will handle all visuals for the game.
 public class GameView {
+
 		private static int X_TILES = 13;
 		private static int Y_TILES = 9;
 		

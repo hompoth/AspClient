@@ -16,6 +16,7 @@ package client;
 import client.World.ConnectionState;
 import client.GetImage;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -35,7 +36,10 @@ import javafx.scene.layout.BackgroundRepeat;
 import javafx.scene.layout.BackgroundSize;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Text;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 
@@ -43,6 +47,8 @@ import javafx.stage.WindowEvent;
 public class LoginClient extends Application{
     Game game;
     GameView gameView;
+    Stage chatBox;
+    
     public static void main(String[] args) throws Exception {
         launch(args);
     }
@@ -56,8 +62,8 @@ public class LoginClient extends Application{
         
         Button loginBtn = new Button();
         Button exitBtn = new Button();
-    	
-        primaryStage.setTitle("Connect to Server");
+
+        primaryStage.setTitle("Snakereta");
         primaryStage.setOnCloseRequest(e -> {
         	if (game != null && game.isRunning()) {
         		game.setConnectionState(ConnectionState.Disconnected);
@@ -107,11 +113,31 @@ public class LoginClient extends Application{
         primaryStage.setScene(new Scene(border, 640, 480)); // TODO: Save this scene if you want to see it on quit.
         primaryStage.setResizable(false);
         primaryStage.show();
+        
+    //    BorderPane border2 = new BorderPane();
+     //   GridPane grid2 = new GridPane();
+        
+//        Platform.runLater(() -> {
+//			e.printStackTrace();
+//			// TODO: Make the popup appear nicer
+//            final Stage dialog = new Stage();
+//            dialog.initModality(Modality.APPLICATION_MODAL);
+//            dialog.setResizable(false);
+//            dialog.initOwner(gameView.stage);
+//            VBox dialogVbox = new VBox(20);
+//            dialogVbox.getChildren().add(new Text("Error:\n"+ e.getMessage()));
+//            Scene dialogScene = new Scene(dialogVbox, 250, 50);
+//            dialogVbox.setPadding(new Insets(5));
+//            dialog.setScene(dialogScene);
+//            dialog.show();
+//            System.out.println(world == null);
+//            this.setConnectionState(ConnectionState.Disconnected);
+//		});
 
         // TODO: Create an options window to choose the size of the game (or fullscreen)
         // Center the canvas and make sure the canvas keeps the 640/480 ratio
-        double width = 1680;
-        double height = 1050;
+        double width = 800;
+        double height = 600;
         Group root = new Group();
         Canvas canvas = new Canvas(width, height);
         root.getChildren().add(canvas);

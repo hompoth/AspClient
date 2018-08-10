@@ -39,15 +39,20 @@ public class PacketHandler {
     private volatile long lastId;
 
     public  PacketHandler(Communication comm) throws Exception {
+//    	Log.println(comm);
     	lastId = 0;
     	this.comm = comm;
         this.events = new LinkedHashMap<Long, Packet>();
         this.stringToEvent = new HashMap<String, Supplier<Packet>>();
+
+        //NOTE: See Goose.EventHandler for unknown commands
 		this.stringToEvent.put("LOK", LoginSuccessEvent::new);
 		this.stringToEvent.put("LNO", LoginFailEvent::new);
 		this.stringToEvent.put("PING", PingEvent::new);
 		this.stringToEvent.put("SCM", MapChangeEvent::new);
 		this.stringToEvent.put("$", MessageBoxEvent::new);
+		this.stringToEvent.put("^", MessageBoxEvent::new);
+		this.stringToEvent.put("#", MessageBoxEvent::new);
 		this.stringToEvent.put("SIS", InventoryInfoEvent::new);
 		this.stringToEvent.put("WNF", EquipmentInfoEvent::new);
 		this.stringToEvent.put("SSS", SpellInfoEvent::new);
@@ -79,6 +84,7 @@ public class PacketHandler {
         //Log.println("---Packet: "+message);
         for (String key : stringToEvent.keySet()) {
             if (message.startsWith(key)) {
+            	Log.println(" --> " + message);
                 Packet e = stringToEvent.get(key).get();
                 e.setId(++lastId);
                 e.setMessage(message);
