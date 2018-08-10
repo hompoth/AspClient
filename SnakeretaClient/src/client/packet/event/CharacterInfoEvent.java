@@ -47,8 +47,6 @@ public class CharacterInfoEvent extends Packet {
 			c.hp = Integer.parseInt(tokens[9]);
 			c.body = Integer.parseInt(tokens[10]);
 			c.pose = Integer.parseInt(tokens[11]);
-			Log.println(loginId+":"+c.characterType+":"+name);
-			//c.level = 1;
 			// RGBA might be a single * or 0,0,0,0
 			//c.hair = new Equipment(Integer.parseInt(tokens[12]), Integer.parseInt(tokens[43]), Integer.parseInt(tokens[44]), Integer.parseInt(tokens[45]), Integer.parseInt(tokens[46]));
 			//c.chest = new Equipment(Integer.parseInt(tokens[13]), Integer.parseInt(tokens[14]), Integer.parseInt(tokens[15]), Integer.parseInt(tokens[16]), Integer.parseInt(tokens[17]));

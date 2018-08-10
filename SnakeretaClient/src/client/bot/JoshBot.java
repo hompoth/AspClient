@@ -6,7 +6,6 @@ import client.bot.action.AttackAction;
 import client.bot.action.BuffAction;
 import client.bot.action.HealAction;
 import client.bot.action.MoveAction;
-import client.bot.action.PickupAction;
 import client.bot.task.AttackMobTask;
 import client.bot.task.Task;
 import client.bot.task.TaskState;
@@ -26,6 +25,7 @@ import client.Character;
 import client.CharacterType;
 import client.Communication;
 import client.Direction;
+import client.Item;
 import client.Log;
 import client.Tile;
 
@@ -121,7 +121,7 @@ public class JoshBot implements Bot {
 			Task task = getTaskQueue().peek();
 			if(task.getInstant() < System.nanoTime()) {
 				boolean taskDone = task.handle();
-				Log.println(task.getClass());
+				//Log.println(task.getClass());
 				getTaskQueue().remove(task);
 				if(!taskDone) { // Re-add task and re-compute instant priority
 					addTask(task);
@@ -193,10 +193,10 @@ public class JoshBot implements Bot {
 	public void setAttackPoints(ArrayList<Point> attackPoints) {
 		__AttackPoints = attackPoints;
 	}
-	public void addAttackPoints(Character character, AttackType type, int range) {
+	public void addAttackPoints(Character character, AttackType type, int closeRange, int outRange) {
 		int x = character.x, y = character.y;
 		if(type == AttackType.Melee) {
-			for(int r = 1; r <= range; ++r) {
+			for(int r = closeRange; r <= outRange; ++r) {
 				getAttackPoints().add(new Point(x,y+r));
 				getAttackPoints().add(new Point(x,y-r));
 				getAttackPoints().add(new Point(x+r,y));
@@ -204,7 +204,7 @@ public class JoshBot implements Bot {
 			}
 		}
 		else if(type == AttackType.Spray) {
-			for(int r = 1; r <= range; ++r) {
+			for(int r = closeRange; r <= outRange; ++r) {
 				for(int s = -(r-1); s <= (r-1); ++s) {
 					getAttackPoints().add(new Point(x+s,y+r));
 					getAttackPoints().add(new Point(x+s,y-r));
@@ -235,7 +235,6 @@ public class JoshBot implements Bot {
 		//addAction(new BuffAction(this));
 		addAction(new HealAction(this));
 		addAction(new MoveAction(this));
-		//addAction(new PickupAction(this));
 	}
 	public void clearQueues() {
 		getTaskQueue().clear();
@@ -313,6 +312,29 @@ public class JoshBot implements Bot {
 			}
 		}
 		return closestPoint;
+	}
+	public Point getClosestItem(int requiredDistance) {
+		if(requiredDistance == 0) { // Default value
+			requiredDistance = Integer.MAX_VALUE;
+		}
+		Character self = getWorld().getSelf();
+		Point currentLocation = new Point(self.x, self.y);
+		Point closestPoint = null;
+		int minDistance = Integer.MAX_VALUE;
+		for(Point p : getWorld().getItems().values()) {
+			int curDistance = distance(p,currentLocation);
+			if(curDistance < minDistance) {
+				minDistance = curDistance;
+				closestPoint = p;
+			}
+		}
+		return (minDistance <= requiredDistance)? closestPoint:null;
+	}
+	
+	public boolean canPickUp() {
+		Character self = getWorld().getSelf();
+		Item item = getWorld().getTile(self.x, self.y).getItem();
+		return item != null;
 	}
 	
 	public void afterMapChange() throws IOException {

@@ -1,13 +1,13 @@
-package client.bot.action;
-
-import java.io.IOException;
+package client.bot.task;
 
 import client.Character;
+import client.Log;
 import client.World;
-import client.bot.Bot;
+import client.bot.AttackType;
 import client.bot.JoshBot;
+import client.bot.Point;
 
-public class BuffAction implements Action {
+public class PickUpTask implements Task {
 
 	private World __World;
 	private World getWorld() {
@@ -40,17 +40,25 @@ public class BuffAction implements Action {
 		__Self = self;
 	}
 	
-	public BuffAction(JoshBot bot) {
+	public PickUpTask(JoshBot bot) {
 		setWorld(bot.getWorld());
 		setBot(bot);
 		setSelf(getWorld().getSelf());
 		setInstant(System.nanoTime());
 	}
 
-	public boolean handle() throws IOException {
-		getWorld().getCommunication().use(1);
-		setInstant(System.nanoTime() + 1000_000_000L * 60 * 29);
+	public boolean handle() {
+		if(getBot().getTaskState() != TaskState.PickUp) {
+			getBot().setTaskState(TaskState.Idle);
+			return true;
+		}
+		Point goToPoint = getBot().getClosestItem(2);
+		if(goToPoint == null) {
+			getBot().setTaskState(TaskState.Idle);
+			return true;
+		}
+		getBot().setCurrentPoint(goToPoint);
+		setInstant(System.nanoTime());
 		return false;
 	}
-
 }

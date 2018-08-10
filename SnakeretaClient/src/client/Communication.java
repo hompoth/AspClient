@@ -95,5 +95,11 @@ public class Communication extends Thread {
 	}
 	public void directWrite(String message) throws IOException {
 		write(message);
+  }
+	public void pickup() throws IOException {
+		write("GET");
+	}
+	public void groupAdd(String name) throws IOException {
+		write("/groupadd "+name);
 	}
 }

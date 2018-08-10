@@ -1,10 +1,9 @@
 package client.packet.event;
 
 import client.Communication;
-import client.Log;
 import client.Packet;
 import client.World;
-import client.World.GameState;
+import client.bot.Point;
 
 public class MapChangeEvent extends Packet {
     @Override
@@ -21,6 +20,10 @@ public class MapChangeEvent extends Packet {
 		catch (Exception e) {
 			throw new Exception("Invalid map data.");
 		}
+		for(Point p : world.getItems().values()) {
+			world.getTile(p.x,p.y).setItem(null);
+		}
+		world.getItems().clear();
 		world.loadMap(mapId, mapName);
    		comm.doneLoadingMap(mapId);
    		world.getBot().afterMapChange();

@@ -53,7 +53,7 @@ public class AttackAction implements Action {
 
 	public boolean handle() throws IOException {
 		Character target = getBot().getCurrentTarget();
-		if(target != null) {
+		if(target != null && getBot().distance(getSelf(),target)<=1) {
 			attack(target);
 		}
 		setInstant(System.nanoTime() + 100_000_000);
