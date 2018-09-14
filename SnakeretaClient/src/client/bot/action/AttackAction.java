@@ -10,6 +10,7 @@ import client.Log;
 import client.World;
 import client.bot.Bot;
 import client.bot.JoshBot;
+import client.bot.Point;
 
 public class AttackAction implements Action {
 	
@@ -52,23 +53,63 @@ public class AttackAction implements Action {
 	}
 
 	public boolean handle() throws IOException {
-		Character target = getBot().getCurrentTarget();
-		if(target != null && getBot().distance(getSelf(),target)<=1) {
-			attack(target);
+		Character target;
+
+		if(getWorld().getClassName().equals("Warrior") || getWorld().getClassName().equals("Rogue")) {
+			if(getSelf().hp < 95) {
+				setInstant(System.nanoTime());
+				return false;
+			}
+			target = getBot().getCurrentTarget();
+			Point cP = getBot().getCurrentPoint();
+			if(target != null && getSelf().x == cP.x && getSelf().y == cP.y) { //getBot().distance(getSelf(),target)<=3) {
+				attack(target);
+				setInstant(System.nanoTime() + 1_500_000_000L);
+				return false;
+			}
 		}
-		setInstant(System.nanoTime() + 100_000_000);
+		else if(getWorld().getClassName().equals("Magus")){
+			if(getSelf().mp < 95) {
+				if(getSelf().hp > 90) {
+					getWorld().getCommunication().cast(3,getSelf().loginId);
+				}
+				setInstant(System.nanoTime());
+				return false;
+			}
+			target = getBot().getAttackTarget(14);
+			if(target != null) {
+				getWorld().getCommunication().cast(29,target.loginId);
+				if(getSelf().hp > 90) {
+					getWorld().getCommunication().cast(3,getSelf().loginId);
+				}
+				getBot().setCurrentTargetAttacked(true);
+				setInstant(System.nanoTime() + 2_000_000_000L);
+				return false;
+			}
+		}
+		else {
+			target = getBot().getAttackTarget(14);
+			if(target != null) {
+				if(getSelf().mp > 50) {
+					getWorld().getCommunication().cast(29,target.loginId);
+				}
+				getBot().setCurrentTargetAttacked(true);
+				setInstant(System.nanoTime() + 60_000_000L);
+				return false;
+			}
+		}
+		setInstant(System.nanoTime() + 100_000_000L);
 		return false;
 	}
 	
 	private void attack(Character target) throws IOException {
-		//if(melee) warrior/rogue spell
 		if(target == null) return;
 		Direction facing = Direction.fromCharacter(getSelf(),target);
 		if(facing != null && getSelf().facing != facing) {
 			getSelf().facing = facing;
 			getWorld().getCommunication().face(facing);
 		}
-		getWorld().getCommunication().attack();
+		getWorld().getCommunication().cast(29,getSelf().loginId);
 		getBot().setCurrentTargetAttacked(true);
 	}
 }

@@ -14,8 +14,8 @@ import javafx.stage.Stage;
 // This will handle all visuals for the game.
 public class GameView {
 
-		private static int X_TILES = 13;
-		private static int Y_TILES = 9;
+		private static int X_TILES = 25;
+		private static int Y_TILES = 17;
 		
 		Stage stage;
 		Scene scene;
@@ -43,6 +43,10 @@ public class GameView {
 		}
 		// TODO: Add outline (spruce it up). Add entering map: MapName
 		public void drawLoadingScreen(int percentage, String message) {
+			if(!Platform.isFxApplicationThread()) {
+				Platform.runLater(() -> drawLoadingScreen(percentage, message));
+				return;
+			}
 			// draw loading image
 			context.drawImage(new Image("skins/Background.bmp"), 0, 0, width, height);
 			context.setFill(Color.AZURE);
@@ -54,10 +58,19 @@ public class GameView {
 			context.fillText("Loading " + percentage + "%: " + message, 50 * ratio, 325 * ratio);
 		}
 		public void clear() {
+			if(!Platform.isFxApplicationThread()) {
+				Platform.runLater(() -> clear());
+				return;
+			}
 			context.setFill(Color.BLACK);
 			context.fillRect(0, 0, width, height);
 		}
-		public void fillOval(double x, double y, double width, double height, Color color) {		
+		public void fillOval(double x, double y, double width, double height, Color color) {
+			if(!Platform.isFxApplicationThread()) {
+				final double fX=x, fY=y;
+				Platform.runLater(() -> fillOval(fX, fY, width, height, color));
+				return;
+			}
 			double tileWidth = this.width/X_TILES, tileHeight = this.height/Y_TILES;
 			if(x >= 1 && x <= 100 && y >= 1 && y <= 100) {
 				x = x - offsetX;
@@ -69,6 +82,11 @@ public class GameView {
 			}
 		}
 		public void fillRect(double x, double y, double width, double height, Color color) {	
+			if(!Platform.isFxApplicationThread()) {
+				final double fX=x, fY=y;
+				Platform.runLater(() -> fillRect(fX, fY, width, height, color));
+				return;
+			}
 			double tileWidth = this.width/X_TILES, tileHeight = this.height/Y_TILES;
 			if(x >= 1 && x <= 100 && y >= 1 && y <= 100) {
 				x = x - offsetX;
@@ -79,7 +97,12 @@ public class GameView {
 				}
 			}
 		}
-		public void fillText(int x, int y, String text, Color color) {	
+		public void fillText(double x, double y, String text, Color color) {	
+			if(!Platform.isFxApplicationThread()) {
+				final double fX=x, fY=y;
+				Platform.runLater(() -> fillText(fX, fY, text, color));
+				return;
+			}
 			double tileWidth = this.width/X_TILES, tileHeight = this.height/Y_TILES;	
 			if(x >= 1 && x <= 100 && y >= 1 && y <= 100) {
 				context.setFont(new Font(15.0).font("Calibri", FontWeight.BOLD, 26.0));

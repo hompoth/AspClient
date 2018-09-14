@@ -405,9 +405,10 @@ public class World {
 					}
 				}
 				gv.fillOval(x + x2, y + y2, 0.2, 0.2, Color.CADETBLUE);
-				gv.fillRect(x, y, 0.8, 0.1, Color.FLORALWHITE);
-				gv.fillRect(x, y, 0.8 * c.hp / 100, 0.1, Color.INDIANRED);
-				gv.fillText(x, y, c.name + " ["+c.hp+"]", Color.DARKSLATEBLUE);
+				gv.fillRect(x, y, 0.8, 0.2, Color.FLORALWHITE);
+				gv.fillRect(x, y + 0.05, 0.8 * c.hp / 100, 0.1, Color.INDIANRED);
+				gv.fillRect(x, y - 0.05, 0.8 * c.mp / 100, 0.1, Color.STEELBLUE);
+				gv.fillText(x, y, c.name + " ["+c.hp+"/"+c.mp+"]", Color.DARKSLATEBLUE);
 			}
 		}
 	}

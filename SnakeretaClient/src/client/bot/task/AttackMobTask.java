@@ -79,13 +79,13 @@ public class AttackMobTask implements Task {
 			return true;
 		}
 		getBot().clearAttackPoints();
-		Character target = getBot().getAttackTarget(5);		
+		Character target = getBot().getAttackTarget(99);		
 		if(target == null) {
 			getBot().setTaskState(TaskState.Idle);
 			getBot().setCurrentTarget(null);
 			return true;
 		}
-		if(getLastTargetAttackedId() == target.loginId) {
+		/*if(getLastTargetAttackedId() == target.loginId) {
 			long currentTime = getTimeFirstAttackedLastTarget();
 			if(currentTime + 3_000_000_000L < System.nanoTime()) { // 3 seconds past
 				if(getLastTargetInitialHp() - 5 < target.hp) {
@@ -100,7 +100,7 @@ public class AttackMobTask implements Task {
 			setLastTargetAttackedId(currentTarget.loginId);
 			setLastTargetInitialHp(currentTarget.hp);
 			setTimeFirstAttackedLastTarget(System.nanoTime());
-		}
+		}*/
 		
 		getBot().addAttackPoints(target, AttackType.Melee,1,1);
 		Point attackPosition = getBot().getClosestAttackPoint();

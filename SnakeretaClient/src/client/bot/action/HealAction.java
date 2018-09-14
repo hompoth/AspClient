@@ -61,7 +61,7 @@ public class HealAction implements Action {
 		if(getSelf().hp < 90) {
 			getWorld().getCommunication().cast(1, getSelf().loginId);
 		}
-		setInstant(System.nanoTime());
+		setInstant(System.nanoTime() + 10_000_000L);
 		return false;
 	}
 

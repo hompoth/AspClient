@@ -3,9 +3,13 @@ package client.bot;
 import client.World;
 import client.bot.action.Action;
 import client.bot.action.AttackAction;
+import client.bot.action.AttackAction2;
 import client.bot.action.BuffAction;
 import client.bot.action.HealAction;
 import client.bot.action.MoveAction;
+import client.bot.action.RegenBuffAction;
+import client.bot.action.SacrificeAction;
+import client.bot.action.SellItemAction;
 import client.bot.task.AttackMobTask;
 import client.bot.task.Task;
 import client.bot.task.TaskState;
@@ -109,6 +113,7 @@ public class JoshBot implements Bot {
 		return __TaskQueue;
 	}
 	public void addTask(Task task) {
+		if(task == null) return;
 		for(Task t : getTaskQueue()) { // Don't add the same task twice
 			if(t.getClass().equals(task.getClass())) {
 				return;
@@ -118,10 +123,9 @@ public class JoshBot implements Bot {
 	}
 	private void handleTask() throws IOException {
 		if(!getTaskQueue().isEmpty()) {
-			Task task = getTaskQueue().peek();
-			if(task.getInstant() < System.nanoTime()) {
+			Long nanoTime = System.nanoTime();
+			for(Task task = getTaskQueue().peek(); task.getInstant() < nanoTime; task = getTaskQueue().peek()) {
 				boolean taskDone = task.handle();
-				//Log.println(task.getClass());
 				getTaskQueue().remove(task);
 				if(!taskDone) { // Re-add task and re-compute instant priority
 					addTask(task);
@@ -132,7 +136,7 @@ public class JoshBot implements Bot {
 	private static Comparator<Task> taskComparator = new Comparator<Task>(){
 		@Override
 		public int compare(Task t1, Task t2) {
-            return (int) (t1.getInstant() - t2.getInstant());
+            return Long.compare(t1.getInstant(), t2.getInstant());
         }
 	};
 	
@@ -145,6 +149,7 @@ public class JoshBot implements Bot {
 		return __ActionQueue;
 	}
 	public void addAction(Action action) {
+		if(action == null) return;
 		for(Action a : getActionQueue()) { // Don't add the same action twice
 			if(a.getClass().equals(action.getClass())) {
 				return;
@@ -154,10 +159,8 @@ public class JoshBot implements Bot {
 	}
 	private void handleAction() throws IOException {
 		if(!getActionQueue().isEmpty()) {
-			Action action = getActionQueue().peek();
-			//Log.println(action.getClass()+"----"+action.getInstant());
-			if(action.getInstant() < System.nanoTime()) {
-				//Log.println("2"+action.getClass()+"----"+action.getInstant());
+			Long nanoTime = System.nanoTime();
+			for(Action action = getActionQueue().peek(); action.getInstant() < nanoTime; action = getActionQueue().peek()) {
 				boolean actionDone = action.handle();
 				getActionQueue().remove(action);
 				if(!actionDone) { // Re-add action and re-compute instant priority
@@ -169,7 +172,7 @@ public class JoshBot implements Bot {
 	private static Comparator<Action> actionComparator = new Comparator<Action>(){
 		@Override
 		public int compare(Action a1, Action a2) {
-            return (int) (a1.getInstant() - a2.getInstant());
+            return Long.compare(a1.getInstant(), a2.getInstant());
         }
 	};
 	
@@ -178,7 +181,6 @@ public class JoshBot implements Bot {
 		return __Enabled;
 	}
 	public void setEnabled(boolean enabled) {
-		__Enabled = enabled;
 		setTaskState(TaskState.Idle);
 		getPath().clear();
 		clearQueues();
@@ -186,6 +188,7 @@ public class JoshBot implements Bot {
 		if(enabled) {
 			loadDefaultQueues();
 		}
+		__Enabled = enabled;
 	}
 	
 	private ArrayList<Point> __AttackPoints;
@@ -234,9 +237,13 @@ public class JoshBot implements Bot {
 	public void loadDefaultQueues() {
 		addTask(new UpdateTask(this));
 		addAction(new AttackAction(this));
+		addAction(new AttackAction2(this));
 		addAction(new BuffAction(this));
 		addAction(new HealAction(this));
 		addAction(new MoveAction(this));
+		addAction(new RegenBuffAction(this));
+		addAction(new SacrificeAction(this));
+		addAction(new SellItemAction(this));
 	}
 	public void clearQueues() {
 		getTaskQueue().clear();
@@ -335,10 +342,12 @@ public class JoshBot implements Bot {
 		return (minDistance <= requiredDistance)? closestPoint:null;
 	}
 	
-	public boolean canPickUp() {
+	public boolean canPickUp(Direction facing) {
 		Character self = getWorld().getSelf();
-		Item item = getWorld().getTile(self.x, self.y).getItem();
-		return item != null;
+		Point inFront = Direction.toPoint(facing, self.x, self.y);
+		Item itemUnder = getWorld().getTile(self.x, self.y).getItem();
+		Item itemInFront = getWorld().getTile(inFront.x, inFront.y).getItem();
+		return (itemUnder != null) || (itemInFront != null);
 	}
 	
 	public void afterMapChange() throws IOException {
@@ -357,7 +366,7 @@ public class JoshBot implements Bot {
 	public Point getFollowPoint() {
 		Character self, player;
 		int x,y,x2,y2;
-		int radius = 3;
+		int radius = 2;
 		int groupLoginId = getWorld().getGroup()[0];
 		if(groupLoginId == 0) {
 			return null;
@@ -375,12 +384,24 @@ public class JoshBot implements Bot {
 		x2 = player.x;
 		y2 = player.y;
 		
-		double angle = Math.atan2(y2-y, x2-x);
+		double angle = Math.atan2(y-y2, x-x2);
 		int diffX = (int) Math.round(radius * Math.cos(angle));
 		int diffY = (int) Math.round(radius * Math.sin(angle));
 		
-		Point newLocation = new Point(x+diffX,y+diffY);
+		Point newLocation = getClosestPosition(x2+diffX,y2+diffY);
 		
 		return newLocation;
+	}
+	private Point getClosestPosition(int i, int j) {
+		for(int r=0; r<=2; ++r) {
+			for(int x=i-r; x<=i+r; ++x) {
+				for(int y=j-r; y<=j+r; ++y) {
+					if(!getWorld().blockedTile(x, y)) {
+						return new Point(x,y);
+					}
+				}
+			}
+		}
+		return null;
 	}
 }

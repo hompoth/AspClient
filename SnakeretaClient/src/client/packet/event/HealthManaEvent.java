@@ -15,7 +15,9 @@ public class HealthManaEvent extends Packet {
     	int hp = Integer.parseInt(tokens[1]);
     	int mp = Integer.parseInt(tokens[2]);
     	Character c = world.getCharacter(loginId);
-    	c.hp = hp;
-    	c.mp = mp;
+    	if(c != null) {
+	    	c.hp = hp;
+	    	c.mp = mp;
+    	}
     }
 }

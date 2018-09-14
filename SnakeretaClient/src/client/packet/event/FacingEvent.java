@@ -1,6 +1,7 @@
 package client.packet.event;
 
 import client.Communication;
+import client.Character;
 import client.Direction;
 import client.Log;
 import client.Packet;
@@ -14,7 +15,10 @@ public class FacingEvent extends Packet {
     	tokens = message.split(",");
     	int loginId = Integer.parseInt(tokens[0]);
     	Direction facing = Direction.fromInteger(Integer.parseInt(tokens[1]));
-    	world.getCharacter(loginId).facing = facing;
+    	Character c = world.getCharacter(loginId);
+    	if(c != null) {
+    		c.facing = facing;
+    	}
     	
     	// Log.println("FacingEvent: "+getMessage());
     }

@@ -48,6 +48,11 @@ public class UpdateTask implements Task {
 	public boolean handle() throws IOException {
 		TaskState state = getBot().getTaskState();
 		Character self = getWorld().getSelf();
+		if(getWorld().getMapId() == 1) {
+			getBot().setEnabled(false);
+			setInstant(System.nanoTime());
+			return false;
+		}
 		for(Character c : getWorld().getCharacters().values()) {
 			if(c.loginId == getSelf().loginId) continue;
 			if(getWorld().groupContains(c.loginId)) continue;
@@ -55,28 +60,28 @@ public class UpdateTask implements Task {
 				getWorld().getCommunication().groupAdd(c.name);
 			}
 		}
-		if(state != TaskState.FollowGroup && getWorld().getClassName().equals("Priest") && getBot().getFollowPoint() != null) {
+		if(state != TaskState.FollowGroup && (getWorld().getClassName().equals("Priest") || getWorld().getClassName().equals("Magus")) && getBot().getFollowPoint() != null) {
 			getBot().setTaskState(TaskState.FollowGroup);
 			getBot().addTask(new FollowGroupTask(getBot()));
 		}
-		else if(state != TaskState.AttackMob && getBot().getAttackTarget(5) != null) {
-	    //  	&& !((state == TaskState.GoToWaypoint || state == TaskState.Idle) && !self.isSurrounded(getWorld()))) {
+		else if(state != TaskState.AttackMob && getBot().getAttackTarget(99) != null) {
+	      	//&& !((state == TaskState.GoToWaypoint || state == TaskState.Idle) && !self.isSurrounded(getWorld()))) {
 			getBot().setTaskState(TaskState.AttackMob);
 			getBot().addTask(new AttackMobTask(getBot()));
 		}
+		else if(getBot().getClosestItem(4) != null) {
+			getBot().setTaskState(TaskState.PickUp);
+			getBot().addTask(new PickUpTask(getBot()));
+		}
 		else if(state == TaskState.Idle) {
-			/*if(getBot().getClosestItem(2) != null) {
-				getBot().setTaskState(TaskState.PickUp);
-				getBot().addTask(new PickUpTask(getBot()));
-			}
-			else*/ if(getWorld().getLevel() <= 20 && !(getWorld().getMapId() == 2)) {
+			if(getWorld().getLevel() <= 20 && !(getWorld().getMapId() == 2)) {
 				getBot().setTaskState(TaskState.GoToWaypoint);
 				getBot().addTask(new GoToWaypointTask(getBot(), 2, 11, 14));
 			}
-			else if(getWorld().getLevel() > 20 && !(getWorld().getMapId() == 2 && 
+			else if(getWorld().getLevel() > 20 && (getWorld().getMapId() == 2 && 
 					getSelf().x < 51 && getSelf().y < 56)) {
 				getBot().setTaskState(TaskState.GoToWaypoint);
-				getBot().addTask(new GoToWaypointTask(getBot(), 2, 12, 95));
+				getBot().addTask(new GoToWaypointTask(getBot(), 2, 29, 22));
 			}
 			else {
 				getBot().setTaskState(TaskState.Wander);

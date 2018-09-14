@@ -23,6 +23,7 @@ import client.packet.event.MapChangeEvent;
 import client.packet.event.MapNameEvent;
 import client.packet.event.MessageBoxEvent;
 import client.packet.event.MovementEvent;
+import client.packet.event.NewWindowEvent;
 import client.packet.event.PingEvent;
 import client.packet.event.SelfEvent;
 import client.packet.event.SelfPositionEvent;
@@ -72,6 +73,7 @@ public class PacketHandler {
 		this.stringToEvent.put("VC", HealthManaEvent::new); // hp/mp
 		this.stringToEvent.put("EOB", EraseObjectEvent::new);
 		this.stringToEvent.put("GUD", GroupUpdateEvent::new);
+		this.stringToEvent.put("ENW", NewWindowEvent::new);
 		// TODO: Create event classes for any temporary events
 		this.stringToEvent.put("TNL", TempEvent::new);
 		this.stringToEvent.put("WPS", TempEvent::new);

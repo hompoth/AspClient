@@ -41,15 +41,18 @@ public class MoveAction implements Action {
 	}
 
 	public boolean handle() throws IOException {
-		if(getBot().canPickUp()) {
-			getWorld().getCommunication().pickup();
-		}
 		getBot().moveTo(getBot().getCurrentPoint());
 		Direction facing = getBot().getMoveDirection();
 		if(facing != null) {
+			if(getBot().canPickUp(facing)) {
+				getWorld().getCommunication().pickup();
+			}
 			getWorld().getCommunication().move(facing);
+			if(getBot().canPickUp(facing)) {
+				getWorld().getCommunication().pickup();
+			}
 		}
-		setInstant(System.nanoTime() + 350_000_000L);
+		setInstant(System.nanoTime() + 450_000_000L);
 		return false;
 	}
 

@@ -1,5 +1,6 @@
 package client;
 
+import client.bot.Point;
 import javafx.scene.input.KeyCode;
 
 public enum Direction {
@@ -58,5 +59,20 @@ public enum Direction {
 
 	public static Direction fromCharacter(Character a, Character b) {
 		return fromXY(b.x-a.x,b.y-a.y);
+	}
+
+	public static Point toPoint(Direction facing, int x, int y) {
+		switch(facing) {
+        case UP:
+        	return new Point(x,y-1);
+        case RIGHT:
+        	return new Point(x+1,y);
+        case DOWN:
+        	return new Point(x,y+1);
+        case LEFT:
+        	return new Point(x-1,y);
+        default:
+        	return null;
+		}
 	}
 }

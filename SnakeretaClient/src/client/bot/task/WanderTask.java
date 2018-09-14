@@ -86,18 +86,15 @@ public class WanderTask implements Task {
 			getOptimalPath().add(new Point(42,17));
 		}
 		else {
-			getOptimalPath().add(new Point(12,95));
-			getOptimalPath().add(new Point(10,96));
-			getOptimalPath().add(new Point(9,90));
-			getOptimalPath().add(new Point(9,81));
-			getOptimalPath().add(new Point(21,88));
+			getOptimalPath().add(new Point(90,92));
+			getOptimalPath().add(new Point(92,66));
 		}
 		setPathIndex(0);
 	}
 	
 	public boolean handle() {
 		Character self = getWorld().getSelf();
-		if(getBot().getTaskState() == TaskState.AttackMob) {
+		if(getBot().getTaskState() == TaskState.AttackMob ||  getBot().getTaskState() == TaskState.PickUp) {
 			setInstant(System.nanoTime());
 			return false;
 		}

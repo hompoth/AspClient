@@ -52,7 +52,7 @@ public class PickUpTask implements Task {
 			getBot().setTaskState(TaskState.Idle);
 			return true;
 		}
-		Point goToPoint = getBot().getClosestItem(2);
+		Point goToPoint = getBot().getClosestItem(4);
 		if(goToPoint == null) {
 			getBot().setTaskState(TaskState.Idle);
 			return true;

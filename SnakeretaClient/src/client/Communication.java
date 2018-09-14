@@ -102,4 +102,13 @@ public class Communication extends Thread {
 	public void groupAdd(String name) throws IOException {
 		write("/groupadd "+name);
 	}
+	public void sellSlot(int npcId, int slotId) throws IOException {
+		write("VSI"+npcId+","+slotId+",1");
+	}
+	public void closeWindow(int windowId, int npcId) throws IOException {
+		write("WBC0,"+windowId+","+npcId+",0,0");
+	}
+	public void rightClick(int x, int y) throws IOException {
+		write("RC"+x+","+y);
+	}
 }

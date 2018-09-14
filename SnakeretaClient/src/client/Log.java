@@ -8,12 +8,7 @@ public class Log {
         if(message != null) {
             //Calendar cal = Calendar.getInstance();
             //Platform.runLater(() -> Program.INSTANCE.textArea.appendText(dateFormat.format(cal.getTime()) + " : " + message + "\n"));
-        	Platform.runLater(() -> System.out.println(message));
+        	//Platform.runLater(() -> System.out.println(message));
         }
-    }
-    public static void test(String message){
-        //Calendar cal = Calendar.getInstance();
-        //Platform.runLater(() -> Program.INSTANCE.textArea.appendText(dateFormat.format(cal.getTime()) + " : " + message + "\n"));
-    	Platform.runLater(() -> System.out.println("Message: "+message));
     }
 }

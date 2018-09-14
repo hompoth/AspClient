@@ -46,15 +46,10 @@ public class BuffAction implements Action {
 		setBot(bot);
 		setSelf(getWorld().getSelf());
 		setInstant(System.nanoTime());
-		lastInstant = System.nanoTime();
 	}
-	long lastInstant;
 	public boolean handle() throws IOException {
-		if(lastInstant + 1_000_000_000L * 15 < getInstant()) {
-			getWorld().getCommunication().cast(2,getSelf().loginId);
-			lastInstant = getInstant();
-		}
-		setInstant(System.nanoTime());
+		getWorld().getCommunication().use(1);
+		setInstant(System.nanoTime() + 1_000_000_000L * 60*29);
 		return false;
 	}
 
